@@ -1,6 +1,7 @@
 #include <stdio.h> /* printf */
 #include <stdlib.h> /* atol */
 #include "walltime.h"
+#include <omp.h>
 
 int main(int argc, char *argv[]) {
   long int N = 1000000;
@@ -11,15 +12,17 @@ int main(int argc, char *argv[]) {
   /* Parallelize with OpenMP using the reduction clause */
   time_start = walltime();
   h = 1./N;
-  sum = 0.;
+  #pragma omp parallel for reduction(+: sum)
   for (int i = 0; i < N; ++i) {
     double x = (i + 0.5)*h;
     sum += 4.0 / (1.0 + x*x);
   }
+
   pi = sum*h;
   double time = walltime() - time_start;
 
-  printf("pi = \%.15f, N = %9d, time = %.8f secs\n", pi, N, time);
+  // printf("pi = \%.15f, N = %9d, time = %.8f secs\n", pi, N, time);
+  printf("%.8f, ", time);
 
   return 0;
 }

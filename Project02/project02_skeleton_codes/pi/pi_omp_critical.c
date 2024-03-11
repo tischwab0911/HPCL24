@@ -12,14 +12,27 @@ int main(int argc, char *argv[]) {
   time_start = walltime();
   h = 1./N;
   sum = 0.;
-  for (int i = 0; i < N; ++i) {
-    double x = (i + 0.5)*h;
-    sum += 4.0 / (1.0 + x*x);
+
+  #pragma omp parallel 
+  {
+    double sumLoc = 0.;
+
+    #pragma omp for
+    for(int i = 0; i < N; ++i) {
+      double x = (i + 0.5)*h;
+      sumLoc += 4.0 / (1.0 + x*x);
+    }
+
+    #pragma omp critical
+    {
+      sum += sumLoc;
+    }
   }
   pi = sum*h;
   double time = walltime() - time_start;
 
-  printf("pi = \%.15f, N = %9d, time = %.8f secs\n", pi, N, time);
+  //printf("pi = \%.15f, N = %9d, time = %.8f secs\n", pi, N, time);
+  printf("%.8f, ", time);
 
   return 0;
 }

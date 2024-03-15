@@ -1,5 +1,7 @@
 #include "pngwriter.h"
 #include <stdlib.h>
+#include <png.h>
+#include <omp.h>
 
 png_data *png_create(int nWidth, int nHeight) {
   int i;
@@ -10,7 +12,7 @@ png_data *png_create(int nWidth, int nHeight) {
   pData->nHeight = nHeight;
   pData->pPixels = (png_bytepp)malloc(nHeight * sizeof(png_bytep));
   for (i = 0; i < nHeight; i++)
-    pData->pPixels[i] = (png_bytep)malloc(3 * nWidth * sizeof(png_byte));
+    pData->pPixels[i] = (png_bytep)calloc(3 * nWidth, sizeof(png_byte));
 
   return pData;
 }
@@ -21,7 +23,7 @@ png_data *png_create(int nWidth, int nHeight) {
   if (x < 0)                                                                   \
     x = 0;
 
-void png_plot(png_data *pData, int x, int y, int r, int g, int b) {
+void png_plot(png_data * pData, int x, int y, int r, int g, int b) {
   if (x >= pData->nWidth)
     return;
   if (y >= pData->nHeight)

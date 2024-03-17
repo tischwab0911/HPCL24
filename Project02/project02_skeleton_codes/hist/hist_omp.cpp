@@ -2,6 +2,7 @@
 #include <iostream>
 #include <random>
 #include <vector>
+#include <omp.h>
 
 #define VEC_SIZE 1000000000
 #define BINS 16
@@ -34,8 +35,31 @@ int main() {
 
   // TODO Parallelize the histogram computation
   time_start = walltime();
-  for (long i = 0; i < VEC_SIZE; ++i) {
-    dist[vec[i]]++;
+  #pragma omp parallel \
+          shared(vec)
+  {
+    long local_dist[BINS];
+    for (int i = 0; i < BINS; ++i) {
+      local_dist[i] = 0;
+    }
+    int tid = omp_get_thread_num();
+    int nthreads = omp_get_num_threads();
+    int start = VEC_SIZE / nthreads * tid;
+    int end;
+    if(tid == nthreads-1){
+      end = VEC_SIZE;
+    } else {
+      end = VEC_SIZE / nthreads * (tid + 1);
+    }
+    for (long i = start; i < end; ++i) {
+      local_dist[vec[i]]++;
+    }
+    #pragma omp critical
+    {
+      for(int i = 0; i < BINS; ++i){
+        dist[i] += local_dist[i];
+      }
+    }
   }
   time_end = walltime();
 

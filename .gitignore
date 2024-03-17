@@ -1,4 +1,4 @@
-# Prerequisites
+# Prerequisites C
 *.d
 
 # Object files
@@ -51,5 +51,10 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
+# vscode
+.vscode/
+
 # Output files
 out/
+.err
+.out

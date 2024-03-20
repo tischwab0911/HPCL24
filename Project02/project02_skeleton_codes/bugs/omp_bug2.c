@@ -8,7 +8,7 @@
 
 int main(int argc, char *argv[]) {
   int nthreads, i, tid;
-  float total;
+  float total=0.0;
 
 /* Spawn parallel region */
   #pragma omp parallel
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
 #pragma omp barrier
 
     /* do some work */
-    total = 0.0;
+    //total = 0.0;
     #pragma omp for schedule(dynamic, 10)
     for (i = 0; i < 1000000; i++)
       total = total + i * 1.0;

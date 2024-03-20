@@ -30,7 +30,8 @@ int main(int argc, char **argv) {
   #pragma omp parallel
   {
     long nLocalIterationsCount = 0;
-    #pragma omp for
+    #pragma omp for \
+            schedule(dynamic)
     for (long index = 0; index < IMAGE_HEIGHT * IMAGE_WIDTH; ++index) {
         long j = index / IMAGE_WIDTH;
         long i = index % IMAGE_WIDTH;

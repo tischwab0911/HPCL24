@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
   {
     double sumLoc = 0.;
 
-    #pragma omp for
+    #pragma omp for scchedule(dynamic)
     for(int i = 0; i < N; ++i) {
       double x = (i + 0.5)*h;
       sumLoc += 4.0 / (1.0 + x*x);

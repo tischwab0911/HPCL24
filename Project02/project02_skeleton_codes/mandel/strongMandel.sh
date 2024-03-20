@@ -2,7 +2,7 @@
 
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=48
-#SBATCH --time=3:00:00
+#SBATCH --time=1:30:00
 #SBATCH --job-name="strong scaling mandelbrot"
 #SBATCH --output=out/strongMandel-%j.out
 #SBATCH --error=out/strongMandel-%j.err
@@ -20,9 +20,9 @@ make
 export OMP_NUM_THREADS=1
 
 echo "========== RUN Tests 1, 2, 4, 8, 16, 24, 32, 40, 48 =========="
-echo "Mandelbrot set Baseline"
-./mandel_omp
-echo
+# echo "Mandelbrot set Baseline"
+# ./mandel_omp
+# echo
 
 export OMP_NUM_THREADS=2
 echo "Mandelbrot set with 2 Threads"

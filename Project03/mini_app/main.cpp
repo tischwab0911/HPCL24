@@ -18,6 +18,8 @@
 
 #include <stdio.h>
 
+#include <omp.h>
+
 #include "data.h"
 #include "linalg.h"
 #include "operators.h"
@@ -96,6 +98,9 @@ int main(int argc, char* argv[]) {
     int nx = options.nx;
     int N  = options.N;
     int nt = options.nt;
+    
+    // get number of threads
+    const int threads = omp_get_num_threads();
 
     // set iteration parameters
     int max_cg_iters     = 300;

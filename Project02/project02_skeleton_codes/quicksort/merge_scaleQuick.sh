@@ -31,7 +31,7 @@ for i in 20 24 28 32 36; do
     for T in 50 100 150 250 500; do
       echo "Running with $T as threshold"
       for j in {1..5}; do
-        ./quicksort_omp $T $n $i
+        ./quicksort_omp_mergeable $T $n $i
       done
     done
   done

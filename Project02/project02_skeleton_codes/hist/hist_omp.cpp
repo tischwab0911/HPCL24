@@ -64,9 +64,9 @@ int main() {
   time_end = walltime();
 
   // Write results
-  for (int i = 0; i < BINS; ++i) {
-    std::cout << "dist[" << i << "]=" << dist[i] << std::endl;
-  }
+  // for (int i = 0; i < BINS; ++i) {
+  //   std::cout << "dist[" << i << "]=" << dist[i] << std::endl;
+  // }
   std::cout << "Time: " << time_end - time_start << " sec" << std::endl;
 
   return 0;

@@ -1,7 +1,13 @@
 CC     = gcc
 CFLAGS = -O3 -fopenmp
 
-all: quicksort quicksort_omp
+all: quicksort quicksort_omp quicksort_omp_mergeable
+
+quicksort_omp_mergeable: quicksort_omp_mergeable.o walltime.o
+	$(CC) $(CFLAGS) $^ -o $@
+
+quicksort_omp_mergeable.o: quicksort_omp_mergeable.c walltime.h
+	$(CC) -c $(CFLAGS) $<
 
 quicksort_omp: quicksort_omp.o walltime.o
 	$(CC) $(CFLAGS) $^ -o $@

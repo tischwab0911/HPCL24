@@ -41,11 +41,11 @@ void quicksort(double *data, int length, int FIN) {
   // print_list(data, length);
 
   /* recursion */
-  #pragma omp task \
+  #pragma omp task mergeable \
           shared(data) \
           final(right<FIN)
   quicksort(data, right, FIN);
-  #pragma omp task \
+  #pragma omp task mergeable \
           shared(data) \
           final((length-left)<FIN)
   quicksort(&(data[left]), length - left, FIN);

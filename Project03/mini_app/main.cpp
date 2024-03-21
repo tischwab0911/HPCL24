@@ -109,7 +109,8 @@ int main(int argc, char* argv[]) {
 
     std::cout << std::string(80, '=') << std::endl;
     std::cout << "                      Welcome to mini-stencil!" << std::endl;
-    std::cout << "version   :: C++ Serial" << std::endl;
+    std::cout << "version   :: C++ OpenMP" << std::endl;
+    std::cout << "threads   :: " << threads << std::endl;
     std::cout << "mesh      :: " << options.nx << " * " << options.nx
                                  << " dx = " << options.dx << std::endl;
     std::cout << "time      :: " << nt << " time steps from 0 .. "

@@ -31,7 +31,7 @@ int main(int argc, char *argv[]) {
     if(tid == nthreads-1){
       end = N;
     } else {
-      end = (N+1)/nthreads;
+      end = ((tid+1)*partition);
     }
     // The only expensive operation required
     double base = Sn * pow(up, start);

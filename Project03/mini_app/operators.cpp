@@ -9,6 +9,7 @@
 #include "data.h"
 #include "operators.h"
 #include "stats.h"
+#include <omp.h>
 
 namespace operators {
 
@@ -26,15 +27,16 @@ void diffusion(data::Field const& s_old, data::Field const& s_new,
     using data::bndN;
     using data::bndS;
 
-    double alpha = options.alpha;
-    double beta = options.beta;
+    const double alpha = options.alpha;
+    const double beta = options.beta;
 
     int nx = options.nx;
     int iend  = nx - 1;
     int jend  = nx - 1;
 
     // the interior grid points
-    #pragma omp parallel for schedule(dynamic)
+    #pragma omp parallel for collapse(2)\
+            firstprivate(iend, jend, alpha, beta)
     for (int j=1; j < jend; j++) {
         for (int i=1; i < iend; i++) {
             f(i,j) = -(4 + alpha) * s_new(i, j)
@@ -47,103 +49,99 @@ void diffusion(data::Field const& s_old, data::Field const& s_new,
     }
 
     // east boundary
-    #pragma omp parallel
     {
-        {
-            int i = nx - 1;
-            #pragma omp for \
-                    schedule(dynamic)
-            for (int j = 1; j < jend; j++) {
-                f(i,j) = -(4. + alpha) * s_new(i,j)
-                    + s_new(i-1,j) + bndE[j]
-                    + s_new(i,j-1) + s_new(i,j+1)
-                    + alpha * s_old(i,j)
-                    + beta * s_new(i,j) * (1.0 - s_new(i,j));
-            }
+        int i = nx - 1;
+        #pragma omp parallel for \
+                firstprivate(alpha, beta)
+        for (int j = 1; j < jend; j++) {
+            f(i,j) = -(4. + alpha) * s_new(i,j)
+                + s_new(i-1,j) + bndE[j]
+                + s_new(i,j-1) + s_new(i,j+1)
+                + alpha * s_old(i,j)
+                + beta * s_new(i,j) * (1.0 - s_new(i,j));
         }
-
-        // west boundary
-        {
-            int i = 0;
-            #pragma omp for schedule(dynamic)
-            for (int j = 1; j < jend; j++) {
-                f(i,j) = -(4. + alpha) * s_new(i,j)
-                    + bndW[j]      + s_new(i+1,j)
-                    + s_new(i,j-1) + s_new(i,j+1)
-                    + alpha * s_old(i,j)
-                    + beta * s_new(i,j) * (1.0 - s_new(i,j));
-            }
-        }
-
-        // north boundary (plus NE and NW corners)
-        {
-            int j = nx - 1;
-
-            #pragma omp task   
-            {
-                int i = 0; // NW corner
-                f(i,j) = -(4. + alpha) * s_new(i,j)
-                    + bndW[j]      + s_new(i+1,j)
-                    + s_new(i,j-1) + bndN[i]
-                    + alpha * s_old(i,j)
-                    + beta * s_new(i,j) * (1.0 - s_new(i,j));
-            }
-
-            // north boundary
-            #pragma omp for schedule(dynamic)
-            for (int i = 1; i < iend; i++) {
-                f(i,j) = -(4. + alpha) * s_new(i,j)
-                    + s_new(i-1,j) + s_new(i+1,j)
-                    + s_new(i,j-1) + bndN[i]
-                    + alpha * s_old(i,j)
-                    + beta * s_new(i,j) * (1.0 - s_new(i,j));
-            }
-            #pragma omp task
-            {
-                int i = nx - 1; // NE corner
-                f(i,j) = -(4. + alpha) * s_new(i,j)
-                    + s_new(i-1,j) + bndE[j]
-                    + s_new(i,j-1) + bndN[i]
-                    + alpha * s_old(i,j)
-                    + beta * s_new(i,j) * (1.0 - s_new(i,j));
-            }
-        }
-
-        // south boundary (plus SW and SE corners)
-        {
-            int j = 0;
-            #pragma omp task
-            {
-                int i = 0; // SW corner
-                f(i,j) = -(4. + alpha) * s_new(i,j)
-                    + bndW[j] + s_new(i+1,j)
-                    + bndS[i] + s_new(i,j+1)
-                    + alpha * s_old(i,j)
-                    + beta * s_new(i,j) * (1.0 - s_new(i,j));
-            }
-
-            // south boundary
-            #pragma omp for schedule(dynamic)
-            for (int i = 1; i < iend; i++) {
-                f(i,j) = -(4. + alpha) * s_new(i,j)
-                    + s_new(i-1,j) + s_new(i+1,j)
-                    + bndS[i]      + s_new(i,j+1)
-                    + alpha * s_old(i,j)
-                    + beta * s_new(i,j) * (1.0 - s_new(i,j));
-            }
-
-            #pragma omp task
-            {
-                int i = nx - 1; // SE corner
-                f(i,j) = -(4. + alpha) * s_new(i,j)
-                    + s_new(i-1,j) + bndE[j]
-                    + bndS[i]      + s_new(i,j+1)
-                    + alpha * s_old(i,j)
-                    + beta * s_new(i,j) * (1.0 - s_new(i,j));
-            }
-        }
-
     }
+
+    // west boundary
+    {
+        int i = 0;
+        #pragma omp parallel for \
+                firstprivate(alpha, beta)
+        for (int j = 1; j < jend; j++) {
+            f(i,j) = -(4. + alpha) * s_new(i,j)
+                + bndW[j]      + s_new(i+1,j)
+                + s_new(i,j-1) + s_new(i,j+1)
+                + alpha * s_old(i,j)
+                + beta * s_new(i,j) * (1.0 - s_new(i,j));
+        }
+    }
+
+    // north boundary (plus NE and NW corners)
+    {
+        int j = nx - 1;
+        {
+            int i = 0; // NW corner
+            f(i,j) = -(4. + alpha) * s_new(i,j)
+                + bndW[j]      + s_new(i+1,j)
+                + s_new(i,j-1) + bndN[i]
+                + alpha * s_old(i,j)
+                + beta * s_new(i,j) * (1.0 - s_new(i,j));
+        }
+
+        {
+            int i = nx - 1; // NE corner
+            f(i,j) = -(4. + alpha) * s_new(i,j)
+                + s_new(i-1,j) + bndE[j]
+                + s_new(i,j-1) + bndN[i]
+                + alpha * s_old(i,j)
+                + beta * s_new(i,j) * (1.0 - s_new(i,j));
+        }
+
+        // north boundary
+        #pragma omp parallel for \
+                firstprivate(alpha, beta)
+        for (int i = 1; i < iend; i++) {
+            f(i,j) = -(4. + alpha) * s_new(i,j)
+                + s_new(i-1,j) + s_new(i+1,j)
+                + s_new(i,j-1) + bndN[i]
+                + alpha * s_old(i,j)
+                + beta * s_new(i,j) * (1.0 - s_new(i,j));
+        }
+    }
+
+    // south boundary (plus SW and SE corners)
+    {
+        int j = 0;
+        {
+            int i = 0; // SW corner
+            f(i,j) = -(4. + alpha) * s_new(i,j)
+                + bndW[j] + s_new(i+1,j)
+                + bndS[i] + s_new(i,j+1)
+                + alpha * s_old(i,j)
+                + beta * s_new(i,j) * (1.0 - s_new(i,j));
+        }
+
+        {
+            int i = nx - 1; // SE corner
+            f(i,j) = -(4. + alpha) * s_new(i,j)
+                + s_new(i-1,j) + bndE[j]
+                + bndS[i]      + s_new(i,j+1)
+                + alpha * s_old(i,j)
+                + beta * s_new(i,j) * (1.0 - s_new(i,j));
+        }
+
+        // south boundary
+        #pragma omp parallel for \
+                firstprivate(alpha, beta)
+        for (int i = 1; i < iend; i++) {
+            f(i,j) = -(4. + alpha) * s_new(i,j)
+                + s_new(i-1,j) + s_new(i+1,j)
+                + bndS[i]      + s_new(i,j+1)
+                + alpha * s_old(i,j)
+                + beta * s_new(i,j) * (1.0 - s_new(i,j));
+        }
+    }
+
 
     // Accumulate the flop counts
     // 8 ops total per point

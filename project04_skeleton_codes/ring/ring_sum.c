@@ -18,13 +18,10 @@ int main(int argc, char *argv[]) {
   recvBuf[0] = rank;
   for(int i = 1; i < size; ++i){
     MPI_Send(&rank, 1, MPI_INT, (rank+i)%size, 42, MPI_COMM_WORLD);
-    MPI_Recv(&recvBuf[i], 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD);
-    MPI_Barrier(MPI_COMM_WORLD);
+    MPI_Recv(&recvBuf[i], 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
     sum += recvBuf[i];
     printf("Process %i: Sum = %i\n", rank, sum);
   }
-
-  MPI
 
   // Finalize MPI
   MPI_Finalize();

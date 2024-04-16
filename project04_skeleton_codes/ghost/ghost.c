@@ -79,32 +79,53 @@ int main(int argc, char *argv[])
     }
 
     // TODO: set the dimensions of the processor grid and periodic boundaries in both dimensions
-    //dims[0]=
-    //dims[1]=
-    //periods[0]=
-    //periods[1]=
+    dims[0]=4;
+    dims[1]=4;
+    periods[0]=1;
+    periods[1]=1;
 
     // TODO: Create a Cartesian communicator (4*4) with periodic boundaries (we do not allow
     // the reordering of ranks) and use it to find your neighboring
     // ranks in all dimensions in a cyclic manner.
+    MPI_Cart_create(MPI_COMM_WORLD, 2, dims, periods, 0, &comm_cart);
     
     // TODO: find your top/bottom/left/right neighbor using the new communicator, see MPI_Cart_shift()
-    // rank_top, rank_bottom
-    // rank_left, rank_right
+    MPI_Cart_shift(comm_cart, 0, 1, &rank_left, &rank_right);
+    MPI_Cart_shift(comm_cart, 1, 1, &rank_top, &rank_bottom);
 
     //  TODO: create derived datatype data_ghost, create a datatype for sending the column, see MPI_Type_vector() and MPI_Type_commit()
     // data_ghost
+    MPI_Type_vector(SUBDOMAIN, 1, 1, MPI_DOUBLE, &data_ghost);
+    MPI_Type_commit(&data_ghost);
+
+    MPI_Datatype data_column;
+    MPI_Type_vector(SUBDOMAIN, 1, DOMAINSIZE, MPI_DOUBLE, &data_column);
+    MPI_Type_commit(&data_column);
 
     //  TODO: ghost cell exchange with the neighbouring cells in all directions
     //  use MPI_Irecv(), MPI_Send(), MPI_Wait() or other viable alternatives
 
+    MPI_Request requests[8];
+    MPI_Status statuses[8];
+
     //  to the top
+    MPI_Isend(&data[1+ DOMAINSIZE], 1, data_ghost, rank_left, 42, comm_cart, &requests[0]);
+    MPI_Irecv(&data[1], 1, data_ghost, rank_left, MPI_ANY_TAG, comm_cart, &requests[1]);
     
     //  to the bottom
-    
+    MPI_Isend(&data[1 + (DOMAINSIZE-2) * DOMAINSIZE], 1, data_ghost, rank_right, 42, comm_cart, &requests[2]);
+    MPI_Irecv(&data[1 + (DOMAINSIZE-1) * DOMAINSIZE], 1, data_ghost, rank_right, MPI_ANY_TAG, comm_cart, &requests[3]);
+
     //  to the left
-    
+    MPI_Isend(&data[DOMAINSIZE + 1], 1, data_column, rank_top, 42, comm_cart, &requests[4]);
+    MPI_Irecv(&data[DOMAINSIZE], 1, data_column, rank_top, MPI_ANY_TAG, comm_cart, &requests[5]);
+
     //  to the right
+    MPI_Isend(&data[2 * DOMAINSIZE - 2], 1, data_column, rank_bottom, 42, comm_cart, &requests[6]);
+    MPI_Irecv(&data[2 * DOMAINSIZE - 1], 1, data_column, rank_bottom, MPI_ANY_TAG, comm_cart, &requests[7]);
+
+
+    MPI_Waitall(8, requests, statuses);
     
 
     if (rank==9) {
@@ -112,7 +133,7 @@ int main(int argc, char *argv[])
         for (j=0; j<DOMAINSIZE; j++) {
             for (i=0; i<DOMAINSIZE; i++) {
                 printf("%.1f ", data[i+j*DOMAINSIZE]);
-                printf("%4.1f ", data[i+j*DOMAINSIZE]);
+                //printf("%4.1f ", data[i+j*DOMAINSIZE]);
             }
             printf("\n");
         }

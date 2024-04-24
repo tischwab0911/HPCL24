@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
   printf("Process %i: Sum = %i\n", rank, sum);
 
   // ring sum
-  int recvBuf[size];
+  int recvBuf[size+1];
   recvBuf[0] = rank;
   for(int i = 1; i < size+1; ++i){
     MPI_Send(&recvBuf[i-1], 1, MPI_INT, (rank+1)%size, 42, MPI_COMM_WORLD);

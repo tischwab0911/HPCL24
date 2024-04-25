@@ -108,19 +108,19 @@ int main(int argc, char *argv[])
     MPI_Request requests[8];
     MPI_Status statuses[8];
 
-    //  to the top
+    //  to the left
     MPI_Isend(&data[1+ DOMAINSIZE], 1, data_ghost, rank_left, 42, comm_cart, &requests[0]);
     MPI_Irecv(&data[1], 1, data_ghost, rank_left, MPI_ANY_TAG, comm_cart, &requests[1]);
     
-    //  to the bottom
+    //  to the right
     MPI_Isend(&data[1 + (DOMAINSIZE-2) * DOMAINSIZE], 1, data_ghost, rank_right, 42, comm_cart, &requests[2]);
     MPI_Irecv(&data[1 + (DOMAINSIZE-1) * DOMAINSIZE], 1, data_ghost, rank_right, MPI_ANY_TAG, comm_cart, &requests[3]);
 
-    //  to the left
+    //  to the top
     MPI_Isend(&data[DOMAINSIZE + 1], 1, data_column, rank_top, 42, comm_cart, &requests[4]);
     MPI_Irecv(&data[DOMAINSIZE], 1, data_column, rank_top, MPI_ANY_TAG, comm_cart, &requests[5]);
 
-    //  to the right
+    //  to the bottom
     MPI_Isend(&data[2 * DOMAINSIZE - 2], 1, data_column, rank_bottom, 42, comm_cart, &requests[6]);
     MPI_Irecv(&data[2 * DOMAINSIZE - 1], 1, data_column, rank_bottom, MPI_ANY_TAG, comm_cart, &requests[7]);
 

@@ -102,11 +102,11 @@ int main(int argc, char *argv[])
     rank_bottom_left = ((selfXCoord + 1) % 4) * 4 + ((selfYCoord + 3) % 4);
     rank_bottom_right = ((selfXCoord + 1) % 4) * 4 + ((selfYCoord + 1) % 4);
 
-    printf("Rank: %d\n", rank);
-    printf("Rank Top Left: %d\n", rank_top_left);
-    printf("Rank Top Right: %d\n", rank_top_right);
-    printf("Rank Bottom Left: %d\n", rank_bottom_left);
-    printf("Rank Bottom Right: %d\n", rank_bottom_right);
+    // printf("Rank: %d\n", rank);
+    // printf("Rank Top Left: %d\n", rank_top_left);
+    // printf("Rank Top Right: %d\n", rank_top_right);
+    // printf("Rank Bottom Left: %d\n", rank_bottom_left);
+    // printf("Rank Bottom Right: %d\n", rank_bottom_right);
 
     //  TODO: create derived datatype data_ghost, create a datatype for sending the column, see MPI_Type_vector() and MPI_Type_commit()
     // data_ghost

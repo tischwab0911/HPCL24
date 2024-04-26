@@ -93,6 +93,21 @@ int main(int argc, char *argv[])
     MPI_Cart_shift(comm_cart, 0, 1, &rank_left, &rank_right);
     MPI_Cart_shift(comm_cart, 1, 1, &rank_top, &rank_bottom);
 
+    int rank_top_left, rank_top_right, rank_bottom_left, rank_bottom_right;
+    int selfXCoord = rank / 4;
+    int selfYCoord = rank % 4;
+
+    rank_top_left = ((selfXCoord + 3) % 4) * 4 + ((selfYCoord + 3) % 4);
+    rank_top_right = ((selfXCoord + 3) % 4) * 4 + ((selfYCoord + 1) % 4);
+    rank_bottom_left = ((selfXCoord + 1) % 4) * 4 + ((selfYCoord + 3) % 4);
+    rank_bottom_right = ((selfXCoord + 1) % 4) * 4 + ((selfYCoord + 1) % 4);
+
+    printf("Rank: %d\n", rank);
+    printf("Rank Top Left: %d\n", rank_top_left);
+    printf("Rank Top Right: %d\n", rank_top_right);
+    printf("Rank Bottom Left: %d\n", rank_bottom_left);
+    printf("Rank Bottom Right: %d\n", rank_bottom_right);
+
     //  TODO: create derived datatype data_ghost, create a datatype for sending the column, see MPI_Type_vector() and MPI_Type_commit()
     // data_ghost
     MPI_Type_vector(SUBDOMAIN, 1, 1, MPI_DOUBLE, &data_ghost);
@@ -126,21 +141,40 @@ int main(int argc, char *argv[])
 
 
     MPI_Waitall(8, requests, statuses);
+
+    // send data in ordinal directions
+    MPI_Isend(&data[1 + DOMAINSIZE], 1, MPI_DOUBLE, rank_top_left, 42, MPI_COMM_WORLD, &requests[0]);
+    MPI_Irecv(data, 1, MPI_DOUBLE, rank_top_left, MPI_ANY_TAG, MPI_COMM_WORLD, &requests[4]);
+
+    MPI_Isend(&data[2 * DOMAINSIZE- 2], 1, MPI_DOUBLE, rank_top_right, 42, MPI_COMM_WORLD, &requests[1]);
+    MPI_Irecv(&data[DOMAINSIZE - 1], 1, MPI_DOUBLE, rank_top_right, MPI_ANY_TAG, MPI_COMM_WORLD, &requests[5]);
+
+    MPI_Isend(&data[(DOMAINSIZE-2) * (DOMAINSIZE) + 1], 1, MPI_DOUBLE, rank_bottom_left, 42, MPI_COMM_WORLD, &requests[2]);
+    MPI_Irecv(&data[(DOMAINSIZE-1) * DOMAINSIZE], 1, MPI_DOUBLE, rank_bottom_left, MPI_ANY_TAG, MPI_COMM_WORLD, &requests[6]);
+
+    MPI_Isend(&data[(DOMAINSIZE-1) * (DOMAINSIZE) - 2], 1, MPI_DOUBLE, rank_bottom_right, 42, MPI_COMM_WORLD, &requests[3]);
+    MPI_Irecv(&data[DOMAINSIZE * DOMAINSIZE -1], 1, MPI_DOUBLE, rank_bottom_right, MPI_ANY_TAG, MPI_COMM_WORLD, &requests[7]);
+
+    MPI_Waitall(8, requests, statuses);
     
 
-    if (rank==9) {
-        printf("data of rank 9 after communication\n");
+    // if (rank==9) {
+        printf("Data from rank %d after communication\n", rank);
         for (j=0; j<DOMAINSIZE; j++) {
             for (i=0; i<DOMAINSIZE; i++) {
-                printf("%.1f ", data[i+j*DOMAINSIZE]);
-                //printf("%4.1f ", data[i+j*DOMAINSIZE]);
+                // printf("%.1f ", data[i+j*DOMAINSIZE]);
+                printf("%4.1f ", data[i+j*DOMAINSIZE]);
             }
             printf("\n");
         }
-    }
+    // }
 
     // Free MPI resources (e.g., types and communicators)
-    // TODO
+    MPI_Type_free(&data_column);
+    MPI_Type_free(&data_ghost);
+
+    MPI_Comm_free(&comm_cart);
+    
 
     // Finalize MPI
     MPI_Finalize();

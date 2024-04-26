@@ -69,6 +69,30 @@ int main(int argc, char* argv[]) {
   // Hint : The first "n % size" processes get "n / size + 1" rows, while the
   //        remaining processes get "n / size".
 
+  if (rank < n % size) {
+    nrows_local = n / size + 1;
+    row_beg_local = rank * nrows_local;
+    row_end_local = row_beg_local + nrows_local -1; // why -1, this should be pointing behind the last row
+  } else {
+    nrows_local = n/size;
+    row_beg_local = rank * nrows_local + (n % size);
+    row_end_local = row_beg_local + nrows_local -1;
+  }
+
+  // build receive counts array
+  int displacement = 0;
+  int displacements[size];
+  int recvcounts[size];
+  for (int sender = 0; sender < size; ++sender) {
+    if (sender < n % size) {
+      recvcounts[sender] = n / size + 1;
+    } else {
+      recvcounts[sender] = n / size;
+    }
+    displacements[sender] = displacement;
+    displacement += recvcounts[sender];
+  }
+
   // Initialize matrix A
   double* A = (double*) calloc(nrows_local*n, sizeof(double));
   for (int i_local = 0; i_local < nrows_local; ++i_local) {
@@ -130,6 +154,7 @@ int main(int argc, char* argv[]) {
   }
   // To do: Broadcast the random initial guess vector to all MPI processes.
   // Hint : MPI_Bcast.
+  MPI_Bcast(y, n, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
   // Power method
   double theta, error;
@@ -155,11 +180,14 @@ int main(int argc, char* argv[]) {
     // Hint: Compute only the local rows, save them in the buffer y_local
     //       and synchronize the result using MPI_Allgather / MPI_Allgatherv.
     for (int i_local = 0; i_local < nrows_local; ++i_local) {
-      y[i_local] = 0.;
+      y_local[i_local] = 0.;
       for (int j_global = 0; j_global < n; ++j_global) {
-        y[i_local] += A[i_local*n + j_global]*v[j_global];
+        y_local[i_local] += A[i_local*n + j_global]*v[j_global];
       }
     }
+
+    MPI_Allgatherv(y_local, nrows_local, MPI_DOUBLE, y, recvcounts, displacements, MPI_DOUBLE, MPI_COMM_WORLD);
+
     // Compute eigenvalue: theta = v^T y
     theta = 0.;
     for (int i_global = 0; i_global < n; ++i_global) {
@@ -172,8 +200,8 @@ int main(int argc, char* argv[]) {
               *(y[i_global] - theta*v[i_global]);
     }
     error = sqrt(error2);
-    if (rank == 0) printf("iteration / theta/ error: %4d / %15.5f / %25.15e\n",
-                          iter, theta, error);
+    // if (rank == 0) printf("iteration / theta/ error: %4d / %15.5f / %25.15e\n",
+                          // iter, theta, error);
     if (error < tol*fabs(theta)) break;
   }
   double time_end = walltime();

@@ -45,6 +45,10 @@ int main(int argc, char* argv[]) {
   int n = atoi(argv[2]);
   int niter = atoi(argv[3]);
   double tol = atof(argv[4]);
+  double np = (argc == 6) ? atoi(argv[5]) : 1;
+
+  n = sqrt(np) * (double) n;
+
   if (n < size) {
     if (rank == 0) printf("Error: number of rows cannot be smaller than "
                           "number of processes!\n");

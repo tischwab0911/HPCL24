@@ -18,7 +18,7 @@ def read_data_from_file(filename):
     return times, ranks
 
 # Read the data from the file
-filename = 'poisson1-59298780.out'
+filename = 'poisson1-59390852.out'
 times, ranks = read_data_from_file(filename)
 
 # Compute average execution time for each number of ranks

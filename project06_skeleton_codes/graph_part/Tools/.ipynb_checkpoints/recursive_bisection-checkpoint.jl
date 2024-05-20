@@ -21,8 +21,6 @@ julia> rec_bisection("coordinatePart", 3, A, coords)
 ```
 """
 function rec_bisection(method, levels, A, coords=zeros(0), vn=zeros(0))
-    
-    if method == 
 
     # RANDOM PARTITIONING - REMOVE AFTER COMPLETION OF THE EXERCISE
     n = size(A)[1];

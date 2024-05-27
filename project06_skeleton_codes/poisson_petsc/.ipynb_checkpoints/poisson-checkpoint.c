@@ -106,16 +106,18 @@ int main(int argc, char **args)
     VecAssemblyBegin(b);
     VecAssemblyEnd(b);
     
+    end_time = MPI_Wtime();
+    assembly_time = end_time - assembly_start;
     
-    // create the ksp context, previously PCCG
+    // create the ksp context
     KSPCreate(PETSC_COMM_WORLD, &ksp);
     KSPSetType(ksp, KSPCG);
 
-    // Create a preconditioner context
+    // create a preconditioner context
     PC pc;
     KSPGetPC(ksp, &pc);
 
-    // Set the type of preconditioner, previously PCGAMG
+    // set the type of preconditioner
     PCSetType(pc, PCGAMG);
     
     KSPSetFromOptions(ksp);
@@ -123,8 +125,6 @@ int main(int argc, char **args)
     
     KSPSetOperators(ksp, A, A);
     KSPSetUp(ksp);
-    end_time = MPI_Wtime();
-    assembly_time = end_time - assembly_start;
     
     // solve LSE, measure time
     start_time = MPI_Wtime();

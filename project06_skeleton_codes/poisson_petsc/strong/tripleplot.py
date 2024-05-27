@@ -27,7 +27,7 @@ def read_data_from_file(filename):
     return execution_times, solver_times, setup_times
 
 # Read the data from the file
-filename = 'clean64-59410269.out'
+filename = 'poisson64-8192.out'
 execution_times, solver_times, setup_times = read_data_from_file(filename)
 
 # Compute average times for each number of ranks
@@ -76,4 +76,4 @@ plt.yscale('log')
 plt.legend()
 
 # Save the plot as a PDF file
-plt.savefig('strong_scaling_results64-59410269.pdf', format='pdf')
+plt.savefig('poisson64-8192.pdf', format='pdf')

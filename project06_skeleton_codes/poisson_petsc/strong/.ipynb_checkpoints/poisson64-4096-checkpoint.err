@@ -38,69 +38,33 @@ Primary job  terminated normally, but 1 process returned
 a non-zero exit code. Per user-direction, the job has been aborted.
 --------------------------------------------------------------------------
 --------------------------------------------------------------------------
-mpirun noticed that process rank 0 with PID 0 on node eu-a2p-277 exited on signal 9 (Killed).
+mpirun noticed that process rank 1 with PID 65308 on node eu-a2p-281 exited on signal 9 (Killed).
 --------------------------------------------------------------------------
 --------------------------------------------------------------------------
 Primary job  terminated normally, but 1 process returned
 a non-zero exit code. Per user-direction, the job has been aborted.
 --------------------------------------------------------------------------
 --------------------------------------------------------------------------
-mpirun noticed that process rank 0 with PID 0 on node eu-a2p-277 exited on signal 9 (Killed).
+mpirun noticed that process rank 1 with PID 65401 on node eu-a2p-281 exited on signal 9 (Killed).
 --------------------------------------------------------------------------
 --------------------------------------------------------------------------
 Primary job  terminated normally, but 1 process returned
 a non-zero exit code. Per user-direction, the job has been aborted.
 --------------------------------------------------------------------------
 --------------------------------------------------------------------------
-mpirun noticed that process rank 0 with PID 0 on node eu-a2p-277 exited on signal 9 (Killed).
+mpirun noticed that process rank 1 with PID 65545 on node eu-a2p-281 exited on signal 9 (Killed).
 --------------------------------------------------------------------------
 --------------------------------------------------------------------------
 Primary job  terminated normally, but 1 process returned
 a non-zero exit code. Per user-direction, the job has been aborted.
 --------------------------------------------------------------------------
 --------------------------------------------------------------------------
-mpirun noticed that process rank 0 with PID 0 on node eu-a2p-277 exited on signal 9 (Killed).
+mpirun noticed that process rank 1 with PID 65646 on node eu-a2p-281 exited on signal 9 (Killed).
 --------------------------------------------------------------------------
 --------------------------------------------------------------------------
 Primary job  terminated normally, but 1 process returned
 a non-zero exit code. Per user-direction, the job has been aborted.
 --------------------------------------------------------------------------
 --------------------------------------------------------------------------
-mpirun noticed that process rank 0 with PID 0 on node eu-a2p-277 exited on signal 9 (Killed).
+mpirun noticed that process rank 1 with PID 65793 on node eu-a2p-281 exited on signal 9 (Killed).
 --------------------------------------------------------------------------
---------------------------------------------------------------------------
-Primary job  terminated normally, but 1 process returned
-a non-zero exit code. Per user-direction, the job has been aborted.
---------------------------------------------------------------------------
---------------------------------------------------------------------------
-mpirun noticed that process rank 2 with PID 13015 on node eu-a2p-282 exited on signal 9 (Killed).
---------------------------------------------------------------------------
---------------------------------------------------------------------------
-Primary job  terminated normally, but 1 process returned
-a non-zero exit code. Per user-direction, the job has been aborted.
---------------------------------------------------------------------------
---------------------------------------------------------------------------
-mpirun noticed that process rank 1 with PID 47881 on node eu-a2p-281 exited on signal 9 (Killed).
---------------------------------------------------------------------------
---------------------------------------------------------------------------
-Primary job  terminated normally, but 1 process returned
-a non-zero exit code. Per user-direction, the job has been aborted.
---------------------------------------------------------------------------
---------------------------------------------------------------------------
-mpirun noticed that process rank 1 with PID 47974 on node eu-a2p-281 exited on signal 9 (Killed).
---------------------------------------------------------------------------
---------------------------------------------------------------------------
-Primary job  terminated normally, but 1 process returned
-a non-zero exit code. Per user-direction, the job has been aborted.
---------------------------------------------------------------------------
---------------------------------------------------------------------------
-mpirun noticed that process rank 1 with PID 48082 on node eu-a2p-281 exited on signal 9 (Killed).
---------------------------------------------------------------------------
---------------------------------------------------------------------------
-Primary job  terminated normally, but 1 process returned
-a non-zero exit code. Per user-direction, the job has been aborted.
---------------------------------------------------------------------------
---------------------------------------------------------------------------
-mpirun noticed that process rank 1 with PID 48185 on node eu-a2p-281 exited on signal 9 (Killed).
---------------------------------------------------------------------------
-slurmstepd: error: Detected 10 oom_kill events in StepId=59409701.batch. Some of the step tasks have been OOM Killed.

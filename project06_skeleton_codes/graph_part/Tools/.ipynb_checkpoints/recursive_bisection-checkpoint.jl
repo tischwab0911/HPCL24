@@ -21,11 +21,42 @@ julia> rec_bisection("coordinatePart", 3, A, coords)
 ```
 """
 function rec_bisection(method, levels, A, coords=zeros(0), vn=zeros(0))
+    minpoints = 8
+    n = size(A, 1)
 
-    # RANDOM PARTITIONING - REMOVE AFTER COMPLETION OF THE EXERCISE
-    n = size(A)[1];
-    rng = MersenneTwister(1234);
-    p = Int.(rand(rng, 1:2^levels, n));
-    return p
+    if isempty(vn)
+        vn = collect(1:n)
+    end
 
+    if n < minpoints || levels < 1
+        return vn
+    else
+        if !isempty(coords)
+            p = eval(Symbol(method))(A, coords)
+            idx1 = findall(x -> x == 1, p)
+            idx2 = findall(x -> x == 2, p)
+            coords1 = coords[idx1, :]
+            coords2 = coords[idx2, :]
+        else
+            p = eval(Symbol(method))(A)
+            idx1 = findall(x -> x == 1, p)
+            idx2 = findall(x -> x == 2, p)
+            coords1 = zeros(0)
+            coords2 = zeros(0)
+        end
+
+        vn1 = vn[idx1]
+        vn2 = vn[idx2]
+        A1 = A[idx1, idx1]
+        A2 = A[idx2, idx2]
+
+        if levels > 1
+            levels -= 1
+            p1 = rec_bisection(method, levels, A1, coords1, vn1)
+            p2 = rec_bisection(method, levels, A2, coords2, vn2)
+            return vcat(p1, p2 .+ maximum(p1))[sortperm(vcat(vn1, vn2))]
+        end
+
+        return p[sortperm(vn)]
+    end
 end

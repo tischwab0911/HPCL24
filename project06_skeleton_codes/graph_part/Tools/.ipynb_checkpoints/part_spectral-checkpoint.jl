@@ -26,7 +26,9 @@ function spectral_part(A)
     L = Diagonal(column_sums[1, :]) .- A
 
     # 2. Compute its eigendecomposition.
-    eigenvals, eigenvecs = eigs(L, nev=2, which=:SM)
+    maxiter = 10000
+    eigenvals, eigenvecs = eigs(L, nev=2, which=:SR, maxiter=maxiter)
+
     fiedler_vec = eigenvecs[:, 2]
 
     # 3. Label the vertices with the entries of the Fiedler vector.

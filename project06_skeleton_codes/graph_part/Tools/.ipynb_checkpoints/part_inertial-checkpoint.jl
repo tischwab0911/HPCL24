@@ -30,8 +30,8 @@ function inertial_part(A, coords)
         S_yy += (coords[i,2] - COM[2])^2
     end
         
-    M = [ S_xx S_xy;
-          S_xy S_yy ]
+    M = [ S_yy S_xy;
+          S_xy S_xx ]
 
     # 3. Compute the eigenvector associated with the smallest eigenvalue of M.
     eigenvalue_min, eigenvector_min = eigs(M, nev=1, which=:SM)
